@@ -4,7 +4,7 @@ General:
     precision: '32'
     epochs: &epoch 200
     grad_acc: 2
-    patience: 5
+    patience: 10
     server: train #train #test
     log_path: logs/
 
