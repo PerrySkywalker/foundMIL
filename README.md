@@ -13,3 +13,13 @@ python train.py --stage='train' --config='config/ABMIL.yaml'
 ```python
 python train.py --stage='test' --config='config/ABMIL.yaml'
 ```
+
+
+###
+```
+lightning==2.0.9.post0
+pytorch-lightning==2.0.9.post0
+pytorch-toolbelt==0.6.3
+torch==2.10
+```
+###

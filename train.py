@@ -17,8 +17,8 @@ torch.backends.cudnn.allow_tf32 = True
 torch.set_float32_matmul_precision('high')
 def make_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--stage', default='train', type=str)
-    parser.add_argument('--config', default='config/TransMIL.yaml',type=str)
+    parser.add_argument('--stage', default='test', type=str)
+    parser.add_argument('--config', default='config/ABMIL.yaml',type=str)
     parser.add_argument('--accelerator', default = 'cuda')
     parser.add_argument('--devices', default = [0])
     parser.add_argument('--fold', default = 0)

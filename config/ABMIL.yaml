@@ -6,13 +6,13 @@ General:
     grad_acc: 2
     patience: 10
     server: train #train #test
-    log_path: logs/
+    log_path: logs_zhiliao/
 
 Data:
     dataset_name: lh_data
     data_shuffle: False 
-    data_dir: /home/perry/nvme2n1/WMK/Ctranspath_all
-    label_dir: dataset_csv/ILH_QILU_fold/
+    data_dir: /home/perry/nvme2n1/WMK/zigong/f/ALL_F/
+    label_dir: /home/perry/Desktop/Code2/Bca/Data_all/zigongzhiliao/
     fold: 0
     nfold: 5
 
@@ -31,7 +31,7 @@ Model:
 
 Optimizer:
     opt: Adamw
-    lr: 0.0001
+    lr: 0.00005
     opt_eps: null
     opt_betas: null
     momentum: null

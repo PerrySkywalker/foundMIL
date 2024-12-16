@@ -58,7 +58,7 @@ class ABMIL(nn.Module):
         super(ABMIL, self).__init__()
         self.attention = Attention_Gated(L, D, K)
         self.classifier = Classifier_1fc(L, num_cls, droprate)
-        self._fc1 = nn.Sequential(nn.Linear(768, 512), nn.ReLU())
+        self._fc1 = nn.Sequential(nn.Linear(1024, 512), nn.ReLU())
     def forward(self, **kwargs): ## x: N x L
         h = kwargs['data'].float() #[B, n, 1024]
         h = self._fc1(h) #[B, n, 512]

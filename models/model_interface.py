@@ -28,19 +28,18 @@ class ModelInterface(pl.LightningModule):
         self.validation_epoch_outputs = []
         self.test_epoch_outputs = []
         #---->Metrics
-        self.AUPRC = torchmetrics.AveragePrecision(task="binary")
         if self.n_classes > 2: 
-            self.AUROC = torchmetrics.AUROC(num_classes = self.n_classes, average = 'macro')
-            metrics = torchmetrics.MetricCollection([torchmetrics.Accuracy(num_classes = self.n_classes,
+            self.AUROC = torchmetrics.AUROC(task='multiclass', num_classes = self.n_classes, average = 'macro')
+            metrics = torchmetrics.MetricCollection([torchmetrics.Accuracy(task='multiclass', num_classes = self.n_classes,
                                                                            average='micro'),
-                                                     torchmetrics.CohenKappa(num_classes = self.n_classes),
-                                                     torchmetrics.F1(num_classes = self.n_classes,
+                                                     torchmetrics.CohenKappa(task='multiclass', num_classes = self.n_classes),
+                                                     torchmetrics.F1Score(task='multiclass', num_classes = self.n_classes,
                                                                      average = 'macro'),
-                                                     torchmetrics.Recall(average = 'macro',
+                                                     torchmetrics.Recall(task='multiclass', average = 'macro',
                                                                          num_classes = self.n_classes),
-                                                     torchmetrics.Precision(average = 'macro',
+                                                     torchmetrics.Precision(task='multiclass', average = 'macro',
                                                                             num_classes = self.n_classes),
-                                                     torchmetrics.Specificity(average = 'macro',
+                                                     torchmetrics.Specificity(task='multiclass', average = 'macro',
                                                                             num_classes = self.n_classes)])
         else : 
             self.AUROC = torchmetrics.AUROC(task='binary', num_classes=2, average = 'macro')
@@ -66,7 +65,7 @@ class ModelInterface(pl.LightningModule):
 
         return {'loss': loss} 
 
-    def on_training_epoch_end(self):
+    def on_train_epoch_end(self):
         labels = torch.cat([x['label'] for x in self.train_epoch_outputs], dim = 0)
         preds = torch.cat([x['Y_hat'] for x in self.train_epoch_outputs], dim = 0)
         for i in range(len(labels)):
@@ -81,7 +80,7 @@ class ModelInterface(pl.LightningModule):
                 acc = None
             else:
                 acc = float(correct) / count
-            print('class {}: acc {}, correct {}/{}'.format(c, acc, correct, count))
+            print(f'class {c}: acc {acc}, correct {correct}/{count}')
         #---->clear
         self.data = [{"count": 0, "correct": 0} for i in range(self.n_classes)]
         self.train_epoch_outputs.clear()
@@ -107,7 +106,7 @@ class ModelInterface(pl.LightningModule):
         if self.n_classes == 2:
             self.log('auc', self.AUROC(probs[:,1], target.squeeze()), prog_bar=True, on_epoch=True, logger=True)
         else:
-            self.log('auc', self.AUROC(probs[:,1], target.squeeze()), prog_bar=True, on_epoch=True, logger=True)
+            self.log('auc', self.AUROC(probs, target.squeeze()), prog_bar=True, on_epoch=True, logger=True)
         self.log_dict(self.valid_metrics(max_probs.squeeze() , target.squeeze()), on_epoch = True, logger = True)
         #---->log acc
         for i in range(len(target)):
@@ -149,8 +148,6 @@ class ModelInterface(pl.LightningModule):
             auc = self.AUROC(probs, target.squeeze())
         metrics = self.test_metrics(max_probs.squeeze() , target.squeeze())
         metrics['auc'] = auc
-        auprc = self.AUPRC(probs[:,1], target.squeeze())
-        metrics['auprc'] = auprc
         for keys, values in metrics.items():
             print(f'{keys} = {values}')
             metrics[keys] = values.cpu().numpy()
